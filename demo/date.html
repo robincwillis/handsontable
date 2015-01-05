@@ -5,12 +5,18 @@
   <title>Date cell type - Handsontable</title>
 
   <script data-jsfiddle="common" src="../lib/jquery.min.js"></script>
-
-  <!--
-  jQuery UI Datepicker is needed for DateCell. It can be loaded before or after Handsontable
-  -->
-  <script data-jsfiddle="common" src="../lib/jquery-ui/js/jquery-ui.custom.min.js"></script>
-  <link data-jsfiddle="common" rel="stylesheet" media="screen" href="../lib/jquery-ui/css/ui-bootstrap/jquery-ui.custom.css">
+  <!-- Lets use Twitter Bootstrap Date Time Picker instead -->
+  <script data-jsfiddle="common" src="../lib/moment.js"></script>
+  <script type="../lib/bootstrap/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap.min.css">
+  <script src="../lib/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../lib/bootstrap/css/bootstrap-datetimepicker.min.css">
+  <style type="text/css">
+    /*Override Bootstrap box sizing*/
+    .handsontable .handsontableInput {
+      box-sizing: content-box !important;
+    }
+  </style>
 
   <!--
   Loading Handsontable (full distribution that includes all dependencies apart from jQuery)
