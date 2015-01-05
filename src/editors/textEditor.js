@@ -98,6 +98,7 @@
   };
 
   TextEditor.prototype.close = function(){
+    console.log('close called');
     this.textareaParentStyle.display = 'none';
 
     this.autoResize.unObserve();

@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Mon Jan 05 2015 13:21:33 GMT-0500 (EST)
+ * Date: Mon Jan 05 2015 17:29:46 GMT-0500 (EST)
  */
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
@@ -5874,6 +5874,7 @@ Handsontable.helper.pageY = function (event) {
   };
 
   TextEditor.prototype.close = function(){
+    console.log('close called');
     this.textareaParentStyle.display = 'none';
 
     this.autoResize.unObserve();
@@ -6449,8 +6450,8 @@ Handsontable.helper.pageY = function (event) {
       throw new Error("You need to include jQuery to your project in order to use the jQuery UI Datepicker.");
     }
 
-    if (!$.fn.datetimepicker){
-      throw new Error("Bootstrap Date Time Picker dependency not found. Did you forget to include it?");
+    if (!$.fn.datepicker){
+      throw new Error("Bootstrap Date Picker dependency not found. Did you forget to include it?");
     }
 
     Handsontable.editors.TextEditor.prototype.init.apply(this, arguments);
@@ -6474,35 +6475,39 @@ Handsontable.helper.pageY = function (event) {
     this.datePickerStyle.left = 0;
     this.datePickerStyle.zIndex = 101;
     document.body.appendChild(this.datePicker);
-    this.$datePicker = $(this.datePicker);
+
 
     var input = document.createElement("input");
     input.type = "text";
     input.style.width = "100%";
     input.style.height = "100%";
     input.style.border = "none";
+    input.value = this.originalValue || "";
     this.datePicker.appendChild(input);
+    this.$datePicker = $(this.datePicker).find('input');
 
     var that = this;
+    this.$datePicker.datepicker({
+      autoclose : true,
+      format: 'mm/dd/yyyy'
+    })
 
-    this.$datePicker.datetimepicker({
-      format: 'MM/DD/YYYY',
-      pickTime: false,
-      defaultDate: this.originalValue || ""
-    });
+    .on('changeDate', function(e){
+      that.setValue(e.format());
+    }).on('show', function(e){
+    /**
+     * Prevent recognizing clicking on Bootstrap Datepicker as clicking outside of table
+     */
+      var dropdown = $('.datepicker')[0];
 
-    this.$datePicker.on("dp.change",function (e) {
-      that.setValue(e.date.format('MM/DD/YYYY'));
+      eventManager.addEventListener(dropdown, 'mousedown', function (event) {
+       Handsontable.helper.stopPropagation(event);
+      });
     });
 
     var eventManager = Handsontable.eventManager(this);
-
-    /**
-     * Prevent recognizing clicking on jQuery Datepicker as clicking outside of table
-     */
     eventManager.addEventListener(this.datePicker, 'mousedown', function (event) {
       Handsontable.helper.stopPropagation(event);
-      //event.stopPropagation();
     });
 
     this.hideDatepicker();
@@ -6524,9 +6529,8 @@ Handsontable.helper.pageY = function (event) {
   };
 
   DateEditor.prototype.showDatepicker = function () {
-
     var offset = Handsontable.Dom.offset(this.TD);
-    this.datePickerStyle.top = (offset.top +1) + 'px';
+    this.datePickerStyle.top = (offset.top + 1) + 'px';
     this.datePickerStyle.left = (offset.left +1) + 'px';
     this.datePickerStyle.width = (Handsontable.Dom.outerWidth(this.TD) -3) + 'px';
     this.datePickerStyle.height = (Handsontable.Dom.outerHeight(this.TD) -3) + 'px';
@@ -6536,10 +6540,10 @@ Handsontable.helper.pageY = function (event) {
     var datepickerSettings = new DatepickerSettings();
     datepickerSettings.defaultDate = this.originalValue || void 0;
     if (this.originalValue) {
-      this.$datePicker.data("DateTimePicker").setDate(this.originalValue);
+      this.$datePicker.datepicker('update',this.originalValue);
     }
-
     this.datePickerStyle.display = 'block';
+    this.$datePicker.datepicker('show');
   };
 
   DateEditor.prototype.hideDatepicker = function () {
